@@ -4,7 +4,32 @@ const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
 
 // Initialize Product model (table) by extending off Sequelize's Model class
-class Product extends Model {}
+class Product extends Model {
+  static tag(body, models) {
+    return models.Category.create({
+      category_id: body.category_id,
+      product_id: body.product_id
+    }).then(() => {
+      return Product.findOne({
+        where: {
+          id: body.product_id
+        },
+        attributes: [
+          'id',
+          'product_name',
+          'price',
+          'stock',
+        ],
+        include: [
+          {
+            model: models.Category,
+            attributes: ['id', 'category_name'],
+          }
+        ]
+      })
+    })
+  }
+}
 
 // set up fields and rules for Product model
 Product.init(
@@ -16,7 +41,7 @@ Product.init(
       primaryKey: true,
       autoIncrement: true
     },
-    produce_name: {
+    product_name: {
       type: DataTypes.STRING,
       allowNull: false
     },
