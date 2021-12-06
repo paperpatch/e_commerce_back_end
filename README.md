@@ -48,7 +48,7 @@ This database uses Insomnia to test and manipulate data:
 Ensure that you create an .env file in your local repository with similar text below before using:
 ```js
 DB_NAME='ecommerce_db'
-DB_USER='your-username' (typically root)
+DB_USER='your-username' // typically root
 DB_PW='your-password'
 ```
 
