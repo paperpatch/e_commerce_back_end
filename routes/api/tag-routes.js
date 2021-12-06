@@ -58,14 +58,26 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   // create a new tag
-  Tag.create({
-    tag_name: req.body.tag_name
+  Tag.create(req.body)
+    .then((tag) => {
+    // if there's product, we need to create parings to bulk create in ProductTag model
+    if (req.body.productIDs.length) {
+      const productTagIdArr = req.body.productIDs.map((product_id) => {
+        return {
+          tag_id: tag.id,
+          product_id,
+        };
+      });
+      return ProductTag.bulkCreate(productTagIdArr);
+    }
+    // if no product tags, just respond
+    res.status(200).json(tag);
   })
-    .then(dbTagData => res.json(dbTagData))
-    .catch(err=> {
-      console.log(err);
-      res.status(500).json(err);
-    })
+  .then((productTagIds) => res.status(200).json(productTagIds))
+  .catch((err) => {
+    console.log(err);
+    res.status(400).json(err);
+  });
 });
 
 router.put('/:id', (req, res) => {
